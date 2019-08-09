@@ -1,10 +1,8 @@
 name := "pretty"
 
-version := "0.1"
+version := "0.2"
 
-scalaVersion := "2.12.6"
-
-//crossScalaVersions := Seq( "2.11.11" )
+scalaVersion := "2.13.0"
 
 scalacOptions ++= Seq( "-deprecation", "-feature", "-unchecked", "-language:postfixOps", "-language:implicitConversions", "-language:existentials" )
 
@@ -17,12 +15,12 @@ resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/release
 resolvers += "Hyperreal Repository" at "https://dl.bintray.com/edadma/maven"
 
 libraryDependencies ++= Seq(
-	"org.scalatest" %% "scalatest" % "3.0.5" % "test",
+	"org.scalatest" %% "scalatest" % "3.0.8" % "test",
 	"org.scalacheck" %% "scalacheck" % "1.14.0" % "test"
 )
 
 libraryDependencies ++= Seq(
-  "org.scala-lang" % "scala-reflect" % "2.12.6"
+  "org.scala-lang" % "scala-reflect" % "2.13.0"
 )
 
 coverageExcludedPackages := ".*Main"

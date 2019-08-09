@@ -25,6 +25,7 @@ package object pretty {
     val thisDepth = prettyPrint(_: Any, indentSize, maxElementWidth, depth)
     val nextDepth = prettyPrint(_: Any, indentSize, maxElementWidth, depth + 1)
     a match {
+      case null => "null"
       // Make Strings look similar to their literal form.
       case s: CharSequence =>
         val replaceMap = Seq(
@@ -34,7 +35,8 @@ package object pretty {
           "\t" -> "\\t",
           "\"" -> "\\\""
         )
-        '"' + replaceMap.foldLeft(s.toString) { case (acc, (c, r)) => acc.replace(c, r) } + '"'
+
+        s""""${replaceMap.foldLeft(s.toString) { case (acc, (c, r)) => acc.replace(c, r) }}""""
       // For an empty Seq just use its normal String representation.
       case m: collection.Map[_, _] if m isEmpty => "Map()"
       case m: collection.Map[_, _] =>
@@ -64,11 +66,12 @@ package object pretty {
           case (_, value) :: Nil => s"$prefix(${thisDepth(value)})"
           // If there is more than one field, build up the field names and values.
           case kvps =>
-            val prettyFields = kvps.map { case (k, v) => s"$fieldIndent$k = ${nextDepth(v)}" }
             // If the result is not too long, pretty print on one line.
-            val resultOneLine = s"$prefix(${prettyFields.mkString(", ")})"
+            val prettyFieldsOneLine = kvps.map { case (k, v) => s"$k = ${nextDepth(v)}" }
+            val resultOneLine = s"$prefix(${prettyFieldsOneLine.mkString(", ")})"
             if (resultOneLine.length <= maxElementWidth) return resultOneLine
             // Otherwise, build it with newlines and proper field indents.
+            val prettyFields = kvps.map { case (k, v) => s"$fieldIndent$k = ${nextDepth(v)}" }
             s"$prefix(\n${prettyFields.mkString(",\n")}\n$indent)"
         }
       // If we haven't specialized this type, just use its toString.
