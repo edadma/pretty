@@ -100,7 +100,7 @@ package object pretty {
         }
       // If we haven't specialized this type, just use its toString.
       case _ =>
-        if (classes) s"${a.toString} : ${a.getClass}"
+        if (classes) s"${a.toString} (${a.getClass})"
         else a.toString
     }
   }
