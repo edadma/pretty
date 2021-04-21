@@ -1,33 +1,42 @@
 name := "pretty"
 
-version := "0.2"
+version := "0.2.1"
 
-scalaVersion := "2.13.0"
+scalaVersion := "2.13.5"
 
-scalacOptions ++= Seq( "-deprecation", "-feature", "-unchecked", "-language:postfixOps", "-language:implicitConversions", "-language:existentials" )
+scalacOptions ++= Seq(
+  "-deprecation",
+  "-feature",
+  "-unchecked",
+  "-language:postfixOps",
+  "-language:implicitConversions",
+  "-language:existentials"
+)
 
 organization := "xyz.hyperreal"
 
 //resolvers += Resolver.sonatypeRepo( "snapshots" )
 
-resolvers += "Typesafe Repository" at "http://repo.typesafe.com/typesafe/releases/"
+resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
 
 resolvers += "Hyperreal Repository" at "https://dl.bintray.com/edadma/maven"
 
 libraryDependencies ++= Seq(
-	"org.scalatest" %% "scalatest" % "3.0.8" % "test",
-	"org.scalacheck" %% "scalacheck" % "1.14.0" % "test"
+  "org.scalatest" %% "scalatest" % "3.0.8" % "test",
+  "org.scalacheck" %% "scalacheck" % "1.14.0" % "test"
 )
 
 libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % "2.13.0"
 )
 
-coverageExcludedPackages := ".*Main"
+mainClass in (Compile, run) := Some(
+  "xyz.hyperreal." + name.value.replace('-', '_') + ".Main"
+)
 
-mainClass in (Compile, run) := Some( "xyz.hyperreal." + name.value.replace('-', '_') + ".Main" )
-
-mainClass in assembly := Some( "xyz.hyperreal." + name.value.replace('-', '_') + ".Main" )
+mainClass in assembly := Some(
+  "xyz.hyperreal." + name.value.replace('-', '_') + ".Main"
+)
 
 assemblyJarName in assembly := name.value + "-" + version.value + ".jar"
 

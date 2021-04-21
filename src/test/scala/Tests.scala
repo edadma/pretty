@@ -1,10 +1,10 @@
 package xyz.hyperreal.pretty
 
 import org.scalatest._
-import prop.PropertyChecks
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
 
-class Tests extends FreeSpec with PropertyChecks with Matchers {
+class Tests extends FreeSpec with ScalaCheckPropertyChecks with Matchers {
 
 	case class P( a: Any, b: Any )
 

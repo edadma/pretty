@@ -1,6 +1,5 @@
 package xyz.hyperreal
 
-
 package object pretty {
 
   /**
@@ -19,11 +18,19 @@ package object pretty {
     * - added support for Map
     * - corrected case class reflection to work for case classes that have declared members other than accessors
     */
-  def prettyPrint(a: Any, indentSize: Int = 2, maxElementWidth: Int = 30, depth: Int = 0): String = {
+  def prettyPrint(
+      a: Any,
+      indentSize: Int = 2,
+      maxElementWidth: Int = 30,
+      depth: Int = 0,
+      classes: Boolean = false
+  ): String = {
     val indent = " " * depth * indentSize
     val fieldIndent = indent + (" " * indentSize)
-    val thisDepth = prettyPrint(_: Any, indentSize, maxElementWidth, depth)
-    val nextDepth = prettyPrint(_: Any, indentSize, maxElementWidth, depth + 1)
+    val thisDepth =
+      prettyPrint(_: Any, indentSize, maxElementWidth, depth, classes)
+    val nextDepth =
+      prettyPrint(_: Any, indentSize, maxElementWidth, depth + 1, classes)
     a match {
       case null => "null"
       // Make Strings look similar to their literal form.
@@ -36,13 +43,18 @@ package object pretty {
           "\"" -> "\\\""
         )
 
-        s""""${replaceMap.foldLeft(s.toString) { case (acc, (c, r)) => acc.replace(c, r) }}""""
+        s""""${replaceMap.foldLeft(s.toString) {
+          case (acc, (c, r)) => acc.replace(c, r)
+        }}""""
       // For an empty Seq just use its normal String representation.
       case m: collection.Map[_, _] if m isEmpty => "Map()"
       case m: collection.Map[_, _] =>
-        m.map { case (k, v) => s"\n$fieldIndent${nextDepth(k)} -> ${nextDepth(v)}" }.mkString( "Map(", ", ", s"\n$indent)" )
+        m.map {
+            case (k, v) => s"\n$fieldIndent${nextDepth(k)} -> ${nextDepth(v)}"
+          }
+          .mkString("Map(", ", ", s"\n$indent)")
       case xs: Seq[_] if xs.isEmpty => "Nil"
-      case xs: Seq[_] =>
+      case xs: Seq[_]               =>
         // If the Seq is not too long, pretty print on one line.
         val resultOneLine = xs.map(nextDepth).toString()
         if (resultOneLine.length <= maxElementWidth) return resultOneLine
@@ -55,10 +67,17 @@ package object pretty {
         // We'll use reflection to get the constructor arg names and values.
         //        val cls = p.getClass
         //        val fields = cls.getDeclaredFields.filterNot(_.isSynthetic).map(_.getName)
-        val fields = scala.reflect.runtime.currentMirror.reflect(p).symbol.typeSignature.decls.
-          filter(s => s.isMethod && s.asMethod.isCaseAccessor).toList.map(_.name)
+        val fields = scala.reflect.runtime.currentMirror
+          .reflect(p)
+          .symbol
+          .typeSignature
+          .decls
+          .filter(s => s.isMethod && s.asMethod.isCaseAccessor)
+          .toList
+          .map(_.name)
         val values = p.productIterator.toSeq
-        if (fields.length != values.length) sys.error( s"fields and values lists have unequal length: $p" )
+        if (fields.length != values.length)
+          sys.error(s"fields and values lists have unequal length: $p")
         fields.zip(values) match {
           // If there are no fields, just use the normal String representation.
           case Nil => p.toString
@@ -67,15 +86,22 @@ package object pretty {
           // If there is more than one field, build up the field names and values.
           case kvps =>
             // If the result is not too long, pretty print on one line.
-            val prettyFieldsOneLine = kvps.map { case (k, v) => s"$k = ${nextDepth(v)}" }
-            val resultOneLine = s"$prefix(${prettyFieldsOneLine.mkString(", ")})"
+            val prettyFieldsOneLine = kvps.map {
+              case (k, v) => s"$k = ${nextDepth(v)}"
+            }
+            val resultOneLine =
+              s"$prefix(${prettyFieldsOneLine.mkString(", ")})"
             if (resultOneLine.length <= maxElementWidth) return resultOneLine
             // Otherwise, build it with newlines and proper field indents.
-            val prettyFields = kvps.map { case (k, v) => s"$fieldIndent$k = ${nextDepth(v)}" }
+            val prettyFields = kvps.map {
+              case (k, v) => s"$fieldIndent$k = ${nextDepth(v)}"
+            }
             s"$prefix(\n${prettyFields.mkString(",\n")}\n$indent)"
         }
       // If we haven't specialized this type, just use its toString.
-      case _ => a.toString
+      case _ =>
+        if (classes) s"${a.toString} : ${a.getClass}"
+        else a.toString
     }
   }
 
