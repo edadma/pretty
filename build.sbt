@@ -15,16 +15,9 @@ scalacOptions ++= Seq(
 
 organization := "xyz.hyperreal"
 
-publishTo := Some(
-  "Artifactory Realm" at "https://hyperreal.jfrog.io/artifactory/default-maven-virtual"
-)
+githubOwner := "edadma"
 
-credentials += Credentials(
-  "Artifactory Realm",
-  "hyperreal.jfrog.io",
-  "edadma@gmail.com",
-  "fW6N-hDhW*XPXhMt"
-)
+githubRepository := "pretty"
 
 resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
 
