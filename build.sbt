@@ -1,8 +1,8 @@
 name := "pretty"
 
-version := "0.2.1"
+version := "0.1.0"
 
-scalaVersion := "2.13.5"
+scalaVersion := "2.13.6"
 
 scalacOptions ++= Seq(
   "-deprecation",
@@ -15,7 +15,16 @@ scalacOptions ++= Seq(
 
 organization := "xyz.hyperreal"
 
-//resolvers += Resolver.sonatypeRepo( "snapshots" )
+publishTo := Some(
+  "Artifactory Realm" at "https://hyperreal.jfrog.io/artifactory/default-maven-virtual"
+)
+
+credentials += Credentials(
+  "Artifactory Realm",
+  "hyperreal.jfrog.io",
+  "edadma@gmail.com",
+  "fW6N-hDhW*XPXhMt"
+)
 
 resolvers += "Typesafe Repository" at "https://repo.typesafe.com/typesafe/releases/"
 
@@ -30,19 +39,13 @@ libraryDependencies ++= Seq(
   "org.scala-lang" % "scala-reflect" % "2.13.0"
 )
 
-mainClass in (Compile, run) := Some(
+mainClass := Some(
   "xyz.hyperreal." + name.value.replace('-', '_') + ".Main"
 )
-
-mainClass in assembly := Some(
-  "xyz.hyperreal." + name.value.replace('-', '_') + ".Main"
-)
-
-assemblyJarName in assembly := name.value + "-" + version.value + ".jar"
 
 publishMavenStyle := true
 
-publishArtifact in Test := false
+Test / publishArtifact := false
 
 pomIncludeRepository := { _ => false }
 
